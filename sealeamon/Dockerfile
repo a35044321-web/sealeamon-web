@@ -1,12 +1,17 @@
-# 使用 Java 17 作為基底
-FROM maven:3.8.4-openjdk-17-slim AS build
+# 第一階段：使用 Maven 進行打包 (改用 Temurin 來源)
+FROM maven:3.8.5-openjdk-17 AS build
+WORKDIR /app
 COPY . .
-# 編譯專案
 RUN mvn clean package -DskipTests
 
-# 執行階段
-FROM openjdk:17-jdk-slim
-COPY --from=build /target/*.jar app.jar
-# 開放 8080 埠號 (Spring Boot 預設)
+# 第二階段：執行 Java 程式 (改用最穩定的 Eclipse Temurin 映像檔)
+FROM eclipse-temurin:17-jre-jammy
+WORKDIR /app
+# 從 build 階段將產出的 jar 檔複製過來
+COPY --from=build /app/target/*.jar app.jar
+
+# 開放 Spring Boot 預設的 8080 埠號
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app.jar"]
+
+# 啟動指令
+ENTRYPOINT ["java", "-jar", "app.jar"]
