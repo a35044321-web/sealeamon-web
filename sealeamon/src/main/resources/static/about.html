@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | LEAMON STUDIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/about.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container nav-flex">
+        <a href="index.html" class="logo">LEMON <span>STUDIO</span></a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-item">The Collection</a>
+            <div class="dropdown">
+                <button class="dropbtn">Archives ▾</button>
+                <div class="dropdown-content">
+                    <a href="about.html">Our Story</a>
+                    <a href="javascript:void(0)" onclick="openLoginModal()">Management</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="container about-main">
+    <div class="about-grid">
+        <div class="about-content">
+            <span class="subtitle">EST. 2024</span>
+            <h1 class="serif-title">Curating the <br><i>Hidden Light</i></h1>
+            <p class="manifesto">
+                創立於 2024 年，LEAMON STUDIO 的誕生源於對螢石變幻莫測色澤的深度迷戀。<br><br>
+                我們不只是礦物的搬運者，更是大地美學的策展人。地質系的專業背景讓我們能以科學的角度審視每一道解理與晶面，為收藏家挑選出最具靈魂的地質藝術品。
+            </p>
+        </div>
+        <div class="about-image">
+             <img src="/resource/about_us.jpg" alt="About LEAMON Studio">
+        </div>
+    </div>
+
+    <section class="milestone-section">
+        <div class="milestone-item">
+            <span class="tag">EXHIBITION</span>
+            <h3>FIMS 受邀參展</h3>
+            <p>三度參與福爾摩沙國際礦物博覽會。我們深信，透過專業的展覽與交流，能讓礦標的地質價值被更多收藏家看見。</p>
+        </div>
+        <div class="milestone-item">
+            <span class="tag">SOURCING</span>
+            <h3>深入礦區採集</h3>
+            <p>親赴湖南瑤崗仙等著名原產地。跨越山海的產地直採，是我們對晶體品質與產地真實性最堅定的承諾。</p>
+        </div>
+        <div class="milestone-item">
+            <span class="tag">DIGITAL</span>
+            <h3>數位品階美學</h3>
+            <p>透過 Instagram 即時影像與專業攝影紀錄，我們在數位時代重新定義礦標收藏的互動與品鑑方式。</p>
+        </div>
+    </section>
+</main>
+
+<section class="footer-ig">
+    <div class="container">
+        <span class="subtitle">Stay Connected</span>
+        <a href="https://www.instagram.com/kallia004167/" target="_blank" class="ig-link">@LEMON_official</a>
+        <p style="margin-top: 20px; font-size: 0.8rem; letter-spacing: 2px; color: #bbb;">FOLLOW US FOR NEW ARRIVALS & LIVE SESSIONS</p>
+    </div>
+</section>
+
+<div id="loginModal" class="modal">
+    <div class="modal-content" style="justify-content: center;">
+        <div style="background: white; padding: 60px; width: 450px; border: 1px solid #eee; text-align: center; position: relative;">
+            <h2 class="serif-title" style="font-size: 2rem; margin-bottom: 30px;">Console</h2>
+            <input type="text" id="uName" placeholder="ACCOUNT" style="width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #eee; letter-spacing: 2px;">
+            <input type="password" id="uPass" placeholder="PASSWORD" style="width: 100%; padding: 15px; margin-bottom: 30px; border: 1px solid #eee; letter-spacing: 2px;">
+            <button onclick="doLogin()" style="width: 100%; background: var(--text-dark); color: white; padding: 15px; border: none; letter-spacing: 4px; cursor: pointer;">VERIFY</button>
+            <p onclick="closeLoginModal()" style="margin-top: 20px; cursor: pointer; font-size: 0.7rem; letter-spacing: 2px; color: #999;">CLOSE</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 修正二：API 改為相對路徑
+    const API_BASE = "/api";
+
+    function openLoginModal() { 
+        document.getElementById('loginModal').style.display = "block"; 
+    }
+    
+    function closeLoginModal() { 
+        document.getElementById('loginModal').style.display = "none"; 
+    }
+
+    window.onclick = function(event) {
+        if (event.target.className === 'modal') {
+            closeLoginModal();
+        }
+    }
+
+    async function doLogin() {
+        const user = document.getElementById('uName').value;
+        const pass = document.getElementById('uPass').value;
+        try {
+            const res = await fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user, password: pass })
+            });
+            const data = await res.json();
+            if(data.success) { 
+                window.location.href = "admin.html"; 
+            } else { 
+                alert(data.message); 
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Login Failed: Server connection error.");
+        }
+    }
+</script>
+
+</body>
+</html>

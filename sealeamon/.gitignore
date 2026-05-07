@@ -1,3 +1,7 @@
+# --- 關鍵：忽略含有密碼的設定檔 ---
+src/main/resources/application.properties
+
+# --- 原本的內容 ---
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar

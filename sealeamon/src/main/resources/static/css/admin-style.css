@@ -1,0 +1,212 @@
+:root {
+    --bg-cool: #f4f7f6;
+    --white: #ffffff;
+    --text-dark: #1a202c;
+    --text-muted: #718096;
+    --accent-gold: #b5945d;
+    --border-light: #e2e8f0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: var(--bg-cool); 
+    color: var(--text-dark);
+    padding: 50px 0;
+    line-height: 1.6;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+header { text-align: center; margin-bottom: 60px; }
+
+.serif-title { 
+    font-family: 'Playfair Display', serif; 
+    font-size: 2.5rem; 
+    letter-spacing: 2px; 
+    text-transform: uppercase; 
+}
+
+.back-link { 
+    display: block; 
+    margin-top: 15px; 
+    color: var(--accent-gold); 
+    text-decoration: none; 
+    font-size: 0.8rem; 
+    letter-spacing: 2px; 
+    text-transform: uppercase; 
+}
+
+/* 管理卡片樣式 */
+.admin-card { 
+    background: var(--white); 
+    padding: 45px; 
+    border: 1px solid var(--border-light);
+    margin-bottom: 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+}
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+.full-width { grid-column: 1 / -1; }
+
+label { 
+    display: block; 
+    font-size: 0.75rem; 
+    letter-spacing: 1.5px; 
+    text-transform: uppercase; 
+    margin-bottom: 12px; 
+    color: var(--text-muted); 
+    font-weight: 600; 
+}
+
+input, select, textarea { 
+    width: 100%; 
+    padding: 14px; 
+    border: 1px solid var(--border-light); 
+    background: #fcfcfc; 
+    font-family: inherit; 
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+input:focus { outline: none; border-color: var(--accent-gold); background: #fff; }
+textarea { height: 120px; resize: none; }
+
+/* 圖片上傳區 */
+.upload-box { 
+    border: 1px dashed var(--border-light); 
+    padding: 30px; 
+    text-align: center; 
+    cursor: pointer; 
+    position: relative;
+    background: #fdfdfd; 
+    transition: 0.3s;
+}
+
+.upload-box:hover { border-color: var(--accent-gold); background: #fff; }
+
+#preview { 
+    max-width: 100%; 
+    max-height: 250px; 
+    display: none; 
+    margin: 15px auto 0; 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
+}
+
+.btn-main { 
+    width: 100%; 
+    background: var(--text-dark); 
+    color: white; 
+    border: none; 
+    padding: 22px; 
+    letter-spacing: 4px; 
+    cursor: pointer; 
+    text-transform: uppercase;
+    transition: 0.3s; 
+    margin-top: 30px; 
+    font-weight: 600;
+}
+
+.btn-main:hover { background: #000; letter-spacing: 5px; }
+
+.btn-cancel { 
+    background: #f1f1f1; 
+    color: #999; 
+    margin-top: 15px; 
+    padding: 12px; 
+    font-size: 0.7rem; 
+    border: none; 
+    width: 100%; 
+    cursor: pointer; 
+    letter-spacing: 2px; 
+    text-transform: uppercase; 
+}
+
+/* 列表樣式 */
+.list-header { 
+    margin: 80px 0 30px; 
+    border-bottom: 1px solid var(--text-dark); 
+    padding-bottom: 15px; 
+    letter-spacing: 3px; 
+    font-weight: 400; 
+    text-transform: uppercase; 
+}
+
+.item-row { 
+    display: flex; 
+    align-items: center; 
+    background: white; 
+    padding: 25px; 
+    border-bottom: 1px solid var(--border-light); 
+    transition: 0.3s;
+}
+
+.item-row:hover { transform: translateX(5px); }
+
+.item-img { 
+    width: 100px; 
+    height: 100px; 
+    object-fit: cover; 
+    margin-right: 30px; 
+    border: 1px solid #eee; 
+}
+
+.item-info { flex-grow: 1; }
+.item-info h4 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 8px; color: var(--text-dark); }
+.item-info p { color: var(--text-muted); font-size: 0.85rem; letter-spacing: 1px; }
+
+.item-actions button { 
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    font-size: 0.75rem; 
+    letter-spacing: 2px; 
+    text-transform: uppercase; 
+    margin-left: 20px; 
+    transition: 0.3s;
+}
+
+.btn-edit { color: var(--accent-gold); font-weight: 600; }
+.btn-del { color: #d9534f; }
+
+/* Metadata 管理樣式 */
+.meta-list { 
+    max-height: 250px; 
+    overflow-y: auto; 
+    border: 1px solid #eee; 
+    background: #fafafa; 
+    padding: 15px; 
+    margin-top: 10px; 
+}
+
+.meta-item { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 10px 0; 
+    border-bottom: 1px solid #f0f0f0; 
+    font-size: 0.85rem; 
+}
+
+.meta-actions button { 
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    font-size: 0.7rem; 
+    text-transform: uppercase; 
+    margin-left: 10px; 
+    letter-spacing: 1px; 
+}
+
+.small-input { padding: 8px; font-size: 0.8rem; }
+
+.btn-mini-add { 
+    background: var(--text-dark); 
+    color: #fff; 
+    padding: 8px 15px; 
+    border: none; 
+    cursor: pointer; 
+    font-size: 0.7rem; 
+    letter-spacing: 1px; 
+}

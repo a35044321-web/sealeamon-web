@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEALEAMON | Geological Management Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin-style.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1 class="serif-title">Specimen Archives</h1>
+        <a href="index.html" class="back-link">← Return to Gallery</a>
+    </header>
+
+    <div class="admin-card">
+        <h3 id="formTitle" style="margin-bottom: 35px; letter-spacing: 3px; font-weight: 400; color: var(--accent-gold);">ADD NEW SPECIMEN</h3>
+        
+        <div class="form-grid">
+            <div class="full-width">
+                <label>Specimen Photo</label>
+                <div class="upload-box" onclick="document.getElementById('imageFile').click()">
+                    <span id="upText" style="color: #bbb; font-size: 0.8rem; letter-spacing: 1px;">Click to upload high-resolution image</span>
+                    <img id="preview" src="" alt="Preview">
+                    <input type="file" id="imageFile" hidden onchange="handlePreview(this)">
+                </div>
+            </div>
+
+            <div class="full-width">
+                <label>Scientific Title (中文名稱)</label>
+                <input type="text" id="nameZh" placeholder="例如：瑤崗仙螢石">
+            </div>
+            <div><label>Title (English)</label><input type="text" id="nameEn"></div>
+            <div><label>Title (Japanese)</label><input type="text" id="nameJp"></div>
+            <div class="full-width"><label>Title (Spanish)</label><input type="text" id="nameEs"></div>
+            
+            <div class="full-width">
+                <label>Geological Description (描述)</label>
+                <textarea id="descriptionZh" placeholder="晶體形態、共生礦物、產狀描述..."></textarea>
+            </div>
+
+            <div><label>Locality (產地)</label><select id="originSelect"></select></div>
+            <div><label>Collection ID / Price</label><input type="text" id="price"></div>
+
+            <div class="full-width">
+                <label>Scientific Classifications (標籤)</label>
+                <div id="tagCheckboxes" style="display: flex; gap: 20px; flex-wrap: wrap; padding: 20px; background: #fafafa; border: 1px solid #eee;"></div>
+            </div>
+        </div>
+
+        <button class="btn-main" id="submitBtn" onclick="submitForm()">Publish to Collection 🍋</button>
+        <button id="cancelBtn" class="btn-cancel" style="display: none;" onclick="resetForm()">Cancel Editing</button>
+    </div>
+
+    <h3 class="list-header">Inventory List</h3>
+    <div id="managerList"></div>
+
+    <section class="admin-card" style="margin-top: 100px; border-top: 4px solid var(--accent-gold);">
+        <h3 class="serif-title" style="font-size: 1.8rem; margin-bottom: 40px;">Scientific Metadata Library</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px;">
+            
+            <div>
+                <label id="originMetaLabel">Add Locality (產地庫)</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="newOriginInput" class="small-input" placeholder="礦區名稱">
+                    <button id="originMetaBtn" onclick="saveMetadata('origins')" class="btn-mini-add">ADD</button>
+                    <button id="cancelOriginEdit" style="display:none; font-size:0.6rem; border:none; background:none; cursor:pointer;" onclick="exitMetaEdit('origins')">CANCEL</button>
+                </div>
+                <div id="originAdminList" class="meta-list"></div>
+            </div>
+
+            <div>
+                <label id="tagMetaLabel">Add Scientific Tag (標籤庫)</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="newTagInput" class="small-input" placeholder="分類標籤">
+                    <button id="tagMetaBtn" onclick="saveMetadata('tags')" class="btn-mini-add">ADD</button>
+                    <button id="cancelTagEdit" style="display:none; font-size:0.6rem; border:none; background:none; cursor:pointer;" onclick="exitMetaEdit('tags')">CANCEL</button>
+                </div>
+                <div id="tagAdminList" class="meta-list"></div>
+            </div>
+
+        </div>
+    </section>
+</div>
+
+<script>
+    // 修正一：API 基礎路徑
+    const API_BASE = "/api";
+    let allMinerals = [];
+    let isEditing = false, currentEditId = null;
+
+    let metaEditState = { 
+        origins: { isEditing: false, id: null }, 
+        tags: { isEditing: false, id: null } 
+    };
+
+    window.onload = async () => {
+        await loadMetadata();
+        await loadManagerList();
+        await renderMetadataManager();
+    };
+
+    async function loadMetadata() {
+        try {
+            const [tags, origins] = await Promise.all([
+                fetch(`${API_BASE}/metadata/tags`).then(res => res.json()),
+                fetch(`${API_BASE}/metadata/origins`).then(res => res.json())
+            ]);
+            document.getElementById('originSelect').innerHTML = origins.map(o => `<option value="${o.id}">${o.nameZh}</option>`).join('');
+            document.getElementById('tagCheckboxes').innerHTML = tags.map(t => `
+                <label style="color: #444; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem;">
+                    <input type="checkbox" name="tags" value="${t.id}"> ${t.nameZh}
+                </label>
+            `).join('');
+        } catch (e) { console.error("Metadata Load Failed", e); }
+    }
+
+    async function loadManagerList() {
+        try {
+            const res = await fetch(`${API_BASE}/minerals`);
+            allMinerals = await res.json();
+            // 修正二：列表圖片改為相對路徑
+            document.getElementById('managerList').innerHTML = allMinerals.map(m => `
+                <div class="item-row">
+                    <img class="item-img" src="/${m.imageUrl}">
+                    <div class="item-info">
+                        <h4>${m.nameZh}</h4>
+                        <p>${m.nameEn || '-'} | ${m.origin ? m.origin.nameZh : 'Unknown'}</p>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-edit" onclick="startEdit(${m.id})">Edit</button>
+                        <button class="btn-del" onclick="deleteMineral(${m.id})">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) { console.error("List Load Failed", e); }
+    }
+
+    function handlePreview(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('preview').src = e.target.result;
+                document.getElementById('preview').style.display = 'block';
+                document.getElementById('upText').style.display = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function startEdit(id) {
+        const m = allMinerals.find(i => i.id === id);
+        if(!m) return;
+        isEditing = true; 
+        currentEditId = id;
+        document.getElementById('nameZh').value = m.nameZh;
+        document.getElementById('nameEn').value = m.nameEn || '';
+        document.getElementById('nameJp').value = m.nameJp || '';
+        document.getElementById('nameEs').value = m.nameEs || '';
+        document.getElementById('descriptionZh').value = m.descriptionZh || '';
+        document.getElementById('price').value = m.price;
+        document.getElementById('originSelect').value = m.origin ? m.origin.id : '';
+        document.querySelectorAll('input[name="tags"]').forEach(cb => cb.checked = m.tags.some(t => t.id == cb.value));
+        
+        // 修正三：編輯預覽圖改為相對路徑，且使用反引號 (關鍵修正！)
+		document.getElementById('preview').src = `/${m.imageUrl}`;
+        
+        document.getElementById('preview').style.display = 'block';
+        document.getElementById('upText').style.display = 'none';
+        document.getElementById('formTitle').innerText = "MODIFYING SPECIMEN #" + id;
+        document.getElementById('submitBtn').innerText = "Update Records 🍋";
+        document.getElementById('cancelBtn').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function submitForm() {
+        const fileInput = document.getElementById('imageFile');
+        let imageUrl = isEditing ? allMinerals.find(i=>i.id===currentEditId).imageUrl : "";
+        
+        try {
+            if (fileInput.files[0]) {
+                const formData = new FormData(); 
+                formData.append("file", fileInput.files[0]);
+                const uploadRes = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
+                imageUrl = await uploadRes.text();
+            }
+            const payload = {
+                nameZh: document.getElementById('nameZh').value,
+                nameEn: document.getElementById('nameEn').value,
+                nameJp: document.getElementById('nameJp').value,
+                nameEs: document.getElementById('nameEs').value,
+                descriptionZh: document.getElementById('descriptionZh').value,
+                price: document.getElementById('price').value,
+                imageUrl: imageUrl, status: "上架",
+                origin: { id: parseInt(document.getElementById('originSelect').value) },
+                tags: Array.from(document.querySelectorAll('input[name="tags"]:checked')).map(cb => ({ id: parseInt(cb.value) }))
+            };
+            const res = await fetch(isEditing ? `${API_BASE}/minerals/${currentEditId}` : `${API_BASE}/minerals`, {
+                method: isEditing ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) { alert("Success!"); resetForm(); loadManagerList(); }
+            else { alert("Error: Check server logs."); }
+        } catch (e) { console.error(e); alert("Network error."); }
+    }
+
+    async function deleteMineral(id) {
+        if (confirm("Confirm removal?")) {
+            await fetch(`${API_BASE}/minerals/${id}`, { method: 'DELETE' }); 
+            loadManagerList();
+        }
+    }
+
+    async function renderMetadataManager() {
+        const [tags, origins] = await Promise.all([
+            fetch(`${API_BASE}/metadata/tags`).then(res => res.json()),
+            fetch(`${API_BASE}/metadata/origins`).then(res => res.json())
+        ]);
+        document.getElementById('originAdminList').innerHTML = origins.map(o => `
+            <div class="meta-item">
+                <span>${o.nameZh}</span>
+                <div class="meta-actions">
+                    <button class="btn-edit" onclick="enterMetaEdit('origins', ${o.id}, '${o.nameZh}')">Edit</button>
+                    <button onclick="deleteMeta('origins', ${o.id})" style="color:#d9534f">×</button>
+                </div>
+            </div>`).join('');
+        document.getElementById('tagAdminList').innerHTML = tags.map(t => `
+            <div class="meta-item">
+                <span>${t.nameZh}</span>
+                <div class="meta-actions">
+                    <button class="btn-edit" onclick="enterMetaEdit('tags', ${t.id}, '${t.nameZh}')">Edit</button>
+                    <button onclick="deleteMeta('tags', ${t.id})" style="color:#d9534f">×</button>
+                </div>
+            </div>`).join('');
+    }
+
+    function enterMetaEdit(type, id, name) {
+        metaEditState[type] = { isEditing: true, id: id };
+        const input = type === 'tags' ? 'newTagInput' : 'newOriginInput';
+        const btn = type === 'tags' ? 'tagMetaBtn' : 'originMetaBtn';
+        const label = type === 'tags' ? 'tagMetaLabel' : 'originMetaLabel';
+        const cancel = type === 'tags' ? 'cancelTagEdit' : 'cancelOriginEdit';
+        
+        document.getElementById(input).value = name;
+        document.getElementById(btn).innerText = "UPDATE";
+        document.getElementById(label).innerText = `Modifying ${type === 'tags' ? 'Tag' : 'Locality'}`;
+        document.getElementById(cancel).style.display = "inline";
+    }
+
+    function exitMetaEdit(type) {
+        metaEditState[type] = { isEditing: false, id: null };
+        const input = type === 'tags' ? 'newTagInput' : 'newOriginInput';
+        const btn = type === 'tags' ? 'tagMetaBtn' : 'originMetaBtn';
+        const label = type === 'tags' ? 'tagMetaLabel' : 'originMetaLabel';
+        const cancel = type === 'tags' ? 'cancelTagEdit' : 'cancelOriginEdit';
+
+        document.getElementById(input).value = "";
+        document.getElementById(btn).innerText = "ADD";
+        document.getElementById(label).innerText = `Add ${type === 'tags' ? 'Scientific Tag' : 'Locality'}`;
+        document.getElementById(cancel).style.display = "none";
+    }
+
+    async function saveMetadata(type) {
+        const state = metaEditState[type];
+        const input = type === 'tags' ? document.getElementById('newTagInput') : document.getElementById('newOriginInput');
+        if (!input.value) return;
+        const url = state.isEditing ? `${API_BASE}/metadata/${type}/${state.id}` : `${API_BASE}/metadata/${type}`;
+        const method = state.isEditing ? 'PUT' : 'POST';
+        const res = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nameZh: input.value })
+        });
+        if (res.ok) {
+            exitMetaEdit(type);
+            await loadMetadata();
+            await renderMetadataManager();
+            if (state.isEditing) loadManagerList();
+        }
+    }
+
+    async function deleteMeta(type, id) {
+        if (confirm("Warning: Procceed?")) {
+            const res = await fetch(`${API_BASE}/metadata/${type}/${id}`, { method: 'DELETE' });
+            if (res.ok) { await loadMetadata(); await renderMetadataManager(); }
+        }
+    }
+
+    function resetForm() {
+        isEditing = false; currentEditId = null;
+        document.querySelectorAll('input[type="text"], textarea').forEach(i => i.value = "");
+        document.getElementById('preview').style.display = 'none';
+        document.getElementById('upText').style.display = 'block';
+        document.getElementById('formTitle').innerText = "ADD NEW SPECIMEN";
+        document.getElementById('submitBtn').innerText = "Publish to Collection 🍋";
+        document.getElementById('cancelBtn').style.display = 'none';
+        document.querySelectorAll('input[name="tags"]').forEach(cb => cb.checked = false);
+    }
+</script>
+</body>
+</html>

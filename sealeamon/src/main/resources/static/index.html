@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEAMON | Curated Mineral Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container nav-flex">
+        <a href="index.html" class="logo">LEMON <span>STUDIO</span></a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-item">The Collection</a>
+            <div class="dropdown">
+                <button class="dropbtn">Archives ▾</button>
+                <div class="dropdown-content">
+                    <a href="about.html">Our Story</a>
+                    <a href="javascript:void(0)" onclick="openLoginModal()">Management</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="container">
+        <span class="subtitle">Premium Curation</span>
+        <h1>Poetry of the Earth</h1>
+        <p style="letter-spacing: 2px; color: #888; font-weight: 300;">A curated selection of rare minerals and crystals, hand-picked for the discerning collector.</p>
+    </div>
+</header>
+
+<section class="container filter-section">
+    <span class="filter-title">Discover by Series</span>
+    <div class="filter-bar" id="filterTags">
+        <button class="chip active" onclick="filterByTag('all', this)">All Minerals</button>
+    </div>
+</section>
+
+<main class="container">
+    <div id="mineralGrid" class="mineral-grid">
+        </div>
+</main>
+
+<section class="footer-ig">
+    <div class="container">
+        <span class="subtitle">Stay Connected</span>
+        <a href="https://www.instagram.com/kallia004167/" target="_blank" class="ig-link">@LEMON_official</a>
+        <p style="margin-top: 20px; font-size: 0.8rem; letter-spacing: 2px; color: #bbb;">FOLLOW US FOR NEW ARRIVALS & LIVE SESSIONS</p>
+    </div>
+</section>
+
+<div id="detailModal" class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-content">
+        <div class="modal-body">
+            <div class="modal-img-area">
+                <img id="modalImg" src="" alt="">
+            </div>
+            <div class="modal-info-area">
+                <h2 id="modalTitleZh" class="serif-title" style="font-size: 3rem; margin-bottom: 20px;"></h2>
+                <div style="font-size: 1.2rem; margin-bottom: 40px; color: #888; letter-spacing: 2px;">
+                    <span id="modalTitleEn"></span> / <span id="modalTitleJp"></span>
+                </div>
+                <div id="modalDesc" style="font-size: 1.1rem; line-height: 2; margin-bottom: 40px; font-weight: 300;"></div>
+                <div id="modalTags" style="margin-bottom: 50px; color: var(--accent-gold); letter-spacing: 2px; font-size: 0.9rem;"></div>
+                <div id="modalPrice" style="font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--text-dark);"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="loginModal" class="modal">
+    <div class="modal-content" style="justify-content: center;">
+        <div style="background: white; padding: 80px; width: 500px; border: 1px solid #eee; text-align: center; position: relative;">
+            <h2 class="serif-title" style="font-size: 2.5rem; margin-bottom: 40px;">Console</h2>
+            <input type="text" id="uName" placeholder="ACCOUNT" style="width: 100%; padding: 20px; margin-bottom: 20px; border: 1px solid #eee; letter-spacing: 2px;">
+            <input type="password" id="uPass" placeholder="PASSWORD" style="width: 100%; padding: 20px; margin-bottom: 40px; border: 1px solid #eee; letter-spacing: 2px;">
+            <button onclick="doLogin()" style="width: 100%; background: var(--text-dark); color: white; padding: 20px; border: none; letter-spacing: 4px; cursor: pointer;">VERIFY</button>
+            <p onclick="closeLoginModal()" style="margin-top: 30px; cursor: pointer; font-size: 0.7rem; letter-spacing: 2px; color: #999;">CLOSE</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 關鍵修正：改為相對路徑 ---
+    const API_BASE = "/api";
+    let allMinerals = [];
+
+    window.onload = async () => {
+        try {
+            const [minerals, tags] = await Promise.all([
+                fetch(`${API_BASE}/minerals`).then(res => res.json()),
+                fetch(`${API_BASE}/metadata/tags`).then(res => res.json())
+            ]);
+            allMinerals = minerals;
+            const tagBox = document.getElementById('filterTags');
+            tags.forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = 'chip'; btn.innerText = t.nameZh;
+                btn.onclick = () => filterByTag(t.id, btn);
+                tagBox.appendChild(btn);
+            });
+            renderGrid(allMinerals);
+        } catch (e) { console.error(e); }
+    };
+
+    function renderGrid(data) {
+        const grid = document.getElementById('mineralGrid');
+        // --- 關鍵修正：圖片路徑改為相對路徑 ---
+        grid.innerHTML = data.map(m => `
+            <div class="mineral-card">
+                <div class="card-img-wrap" onclick="openModal(${m.id})">
+                    <img src="/${m.imageUrl}" alt="${m.nameZh}">
+                    <div class="card-overlay">VIEW SPECIMEN</div>
+                </div>
+                <div class="card-content">
+                    <span class="card-origin">${m.origin ? m.origin.nameZh : 'Earth'}</span>
+                    <h3>${m.nameZh}</h3>
+                    <div class="card-bottom">
+                        <span class="card-price">${m.price}</span>
+                        <button class="btn-detail" onclick="openModal(${m.id})">Details</button>
+                    </div>
+                </div>
+            </div>`).join('');
+    }
+
+    function filterByTag(tagId, btn) {
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        const filtered = tagId === 'all' ? allMinerals : allMinerals.filter(m => m.tags.some(t => t.id === tagId));
+        renderGrid(filtered);
+    }
+
+    function openModal(id) {
+        const m = allMinerals.find(i => i.id === id);
+        if(!m) return;
+        // --- 關鍵修正：圖片路徑改為相對路徑 ---
+        document.getElementById('modalImg').src = `/${m.imageUrl}`;
+        document.getElementById('modalTitleZh').innerText = m.nameZh;
+        document.getElementById('modalTitleEn').innerText = m.nameEn || '';
+        document.getElementById('modalTitleJp').innerText = m.nameJp || '';
+        document.getElementById('modalDesc').innerText = m.descriptionZh || '';
+        document.getElementById('modalPrice').innerText = m.price;
+        document.getElementById('modalTags').innerHTML = m.tags.map(t => `#${t.nameZh} `).join('');
+        document.getElementById('detailModal').style.display = "block";
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() { 
+        document.getElementById('detailModal').style.display = "none"; 
+        document.body.style.overflow = "auto";
+    }
+
+    function openLoginModal() { document.getElementById('loginModal').style.display = "block"; }
+    function closeLoginModal() { document.getElementById('loginModal').style.display = "none"; }
+
+    window.onclick = function(event) {
+        if (event.target.className === 'modal') {
+            closeModal();
+            closeLoginModal();
+        }
+    }
+
+    async function doLogin() {
+        const user = document.getElementById('uName').value;
+        const pass = document.getElementById('uPass').value;
+        const res = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: user, password: pass })
+        });
+        const data = await res.json();
+        if(data.success) { window.location.href = "admin.html"; } else { alert(data.message); }
+    }
+</script>
+</body>
+</html>

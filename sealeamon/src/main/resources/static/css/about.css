@@ -1,0 +1,89 @@
+/* --- About 頁面專屬佈局 --- */
+.about-main { 
+    padding: 80px 0; 
+    background-color: var(--bg-cool); 
+}
+
+.about-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 80px; 
+    align-items: center; 
+}
+
+.about-content { 
+    padding-right: 20px; 
+}
+
+.serif-title { 
+    font-size: 3.5rem; 
+    margin-bottom: 25px; 
+    line-height: 1.1; 
+}
+
+.manifesto { 
+    font-size: 1.1rem; 
+    line-height: 2.2; 
+    color: var(--text-muted); 
+    font-weight: 300; 
+}
+
+.about-image { 
+    position: relative; 
+    box-shadow: 20px 20px 0px var(--white), 21px 21px 1px var(--accent-gold); 
+}
+
+.about-image img { 
+    width: 100%; 
+    display: block; 
+    filter: grayscale(10%); 
+}
+
+.milestone-section { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 40px; 
+    margin-top: 100px; 
+    border-top: 1px solid var(--border-light); 
+    padding-top: 60px; 
+}
+
+.milestone-item .tag { 
+    font-size: 0.7rem; 
+    letter-spacing: 3px; 
+    color: var(--accent-gold); 
+    display: block; 
+    margin-bottom: 15px; 
+    font-weight: 600; 
+}
+
+.milestone-item h3 { 
+    font-family: 'Playfair Display', serif; 
+    font-weight: 400; 
+    font-size: 1.5rem; 
+    margin-bottom: 12px; 
+}
+
+.milestone-item p { 
+    font-size: 0.85rem; 
+    color: var(--text-muted); 
+    line-height: 1.8; 
+}
+
+/* ============================================================
+   📱 手機版 RWD 修正
+   ============================================================ */
+@media (max-width: 992px) {
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .serif-title { font-size: 2.5rem; }
+}
+
+@media (max-width: 768px) {
+    .container { padding: 0 30px !important; } 
+    .about-main { padding: 40px 0; }
+    .serif-title { font-size: 1.8rem; margin-bottom: 20px; padding-left: 3px; }
+    .manifesto { font-size: 0.95rem; line-height: 1.9; }
+    .milestone-section { grid-template-columns: 1fr; gap: 40px; margin-top: 50px; padding-top: 40px; }
+    .logo { font-size: 1.2rem; }
+    .nav-item, .dropdown { margin-left: 15px; font-size: 0.7rem; }
+}
