@@ -1,28 +1,61 @@
-# Lemon Stone Studio - 檸檬石工作室 (畢業專題)
+# Lemon Stone Studio - 檸檬石工作室 (畢業專案)
 
-這是一個專為礦石展示設計的 Web 平台，旨在提供優質的礦石科普知識，並透過 RWD 響應式設計引導使用者至 Instagram 進行社群互動與購買。
+> **🌐 點擊觀看實體網站：[https://lemonstonestudio.com/index.html](https://lemonstonestudio.com/index.html)**
 
-## 🚀 專案亮點
-* **全端開發**：整合 Java Spring Boot 後端與 MySQL 資料庫。
-* **雲端佈署**：運行於 Oracle Cloud Ubuntu 伺服器，並使用 Nginx 進行反向代理。
-* **安全防護**：導入 SSL (HTTPS) 加密憑證，並透過 Cloudflare 進行 DNS 管理與安全性強化。
-* **行動優先**：針對手機用戶優化，支援大檔案圖片上傳與 RWD 瀏覽體驗。
+---
 
-## 🛠️ 技術棧 (Tech Stack)
-* **Backend:** Java 17, Spring Boot 3, Spring Security
-* **Database:** MySQL 8.0
-* **Frontend:** HTML5, CSS3, JavaScript (Vanilla JS)
-* **Web Server:** Nginx
-* **Infrastructure:** Oracle Cloud Infrastructure (OCI), Cloudflare, SSL/TLS (Certbot)
+## 💡 開發初衷與目標
+此專案是我特別為我老婆所開發的展示網站。
 
-## 📦 核心功能
-1. **礦石展示系統**：動態載入資料庫礦石資料，支援 RWD 排版。
-2. **後台管理介面**：提供管理員登入，支援手機直接拍照上傳礦石照片。
-3. **IG 導流連結**：點擊展示頁面可直接跳轉至對應的 Instagram 貼文。
-4. **科普文章系統**：發布礦物相關知識，提升網站 SEO 表現。
+雖然「檸檬礦工作室」目前主要透過 Instagram 進行行銷與販售，但此網站提供了另一種純粹且具質感的觀看風格。設計本站的主要目的在於**分散單一渠道的風險**，避免過度針對 IG 產生依賴，讓品牌擁有自主的展示平台。
 
-## 🔧 本地開發設定
-1. Clone 本專案。
-2. 參考 `src/main/resources/application.properties.example` 建立你自己的 `application.properties`。
-3. 確保本地環境已安裝 JDK 17 與 MySQL。
-4. 使用 Maven 進行編譯與運行。
+本網站定位為**展示與導流系統**，並非購物車網站。其核心功能在於提供不同的觀看選項，並將對礦石有興趣的客戶精準導流至 Instagram。
+
+---
+
+## 🌐 網站介面展示 (V1.0 一站式響應網頁)
+目前第一版採用一站式響應式設計（RWD），後續會根據開發需求進行版本控制與功能修改。
+
+### 1. 首頁展示 (Main Page)
+呈現品牌主視覺與精選礦物。
+![首頁展示](images/lemonstonestudio_main_page.png)
+
+### 2. 關於我們 (About Us)
+分享品牌理念與工作室願景。
+![關於我們](images/lemonstonestudio_about_us.png)
+
+### 3. 多樣化展示頁面 (Other Pages)
+針對不同裝置優化的瀏覽介面。
+![功能頁面](images/lemonstonestudio_other_pages.png)
+
+---
+
+## ⚙️ 專業管理與導流功能
+
+### 產品展示與專業標籤 (Tags System)
+主頁下方的產品展示，提供了專業的 **Tag 標籤功能**，協助客戶了解特定礦物之**共生礦**資訊與**特定產地**。
+![標籤管理](images/lemonstonestudio_CRUD_tags.png)
+
+### 後台管理介面 (Backend Management)
+管理員可隨時更換展示內容。
+![後台管理](images/lemonstonestudio_backend_management.png)
+
+### 商品維護與 IG 導流 (Product CRUD)
+支援現有產品編輯，並提供直接連結至 IG 的導流按鈕。
+![商品管理](images/lemonstonestudio_CRUD_existing_product.png)
+
+---
+
+## 🛠️ 技術規格 (Tech Stack)
+
+* **後端 (Backend):** Java 17, Spring Boot 3, Spring Data JPA
+* **資料庫 (Database):** MySQL 8.0 (部署於 Oracle Cloud)
+* **前端 (Frontend):** HTML5, CSS3, JavaScript (Vanilla JS)
+* **部署與安全:** Oracle Cloud (Ubuntu), Nginx (Reverse Proxy), SSL (Certbot), Cloudflare
+
+---
+
+## 🚀 快速上手
+1. **設定檔：** 參考 `src/main/resources/application.properties.example`。
+2. **安全性：** 敏感資料庫資訊已透過 `.gitignore` 保護，不公開上傳。
+3. **版本控制：** 本專案將根據後續需求持續進行開發與版本更新。
