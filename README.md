@@ -1,4 +1,4 @@
-# Lemon Stone Studio - 檸檬石工作室 (畢業專案)
+# Lemon Stone Studio - 檸檬石工作室 (個人畢業專案)
 
 > **🌐 點擊觀看實體網站：[https://lemonstonestudio.com/index.html](https://lemonstonestudio.com/index.html)**
 
